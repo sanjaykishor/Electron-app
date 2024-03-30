@@ -80,18 +80,16 @@ function createMainWindow() {
     const child = spawn("uuu", ["-v", scriptPath]);
 
     // test
-    setTimeout(()=>mainWindow.webContents.send("progress-update", 1), 5000);
-    setTimeout(()=> mainWindow.webContents.send("flashing-success", "completed"), 10000); 
+    // setTimeout(()=>mainWindow.webContents.send("progress-update", 1), 5000);
+    // setTimeout(()=> mainWindow.webContents.send("flashing-success", "completed"), 10000); 
 
     child.stdout.on("data", (data) => {
       console.log(`stdout: ${data}`);
 
       if (data.toString().includes("done")) {
         mainWindow.webContents.send("progress-update", 1);
-        setTimeout(()=> mainWindow.webContents.send("flashing-success", data.toString()), 1000); 
+        setTimeout(()=> mainWindow.webContents.send("flashing-success", data.toString()), 500); 
       }
-      //   mainWindow.webContents.send("progress-update", 1);
-      //   mainWindow.webContents.send("flashing-success", data.toString());
     });
 
     child.stderr.on("data", (data) => {
@@ -118,18 +116,6 @@ function createMainWindow() {
     child.on("message", (message, sendHandle) => {
       console.log(`Child process message: ${message}`);
     });
-
-    //   exec(`uuu -v ${scriptPath}`, (error, stdout, stderr) => {
-    //     if (error) {
-    //         console.error(`exec error: ${error}`);
-    //         return;
-    //     }
-    //     console.log(`stderr: ${stderr}`);
-    //     console.log(`stdout: ${stdout}`);
-    // });
-
-    // Execute the script
-    // Replace this with your script execution logic
   }
 }
 
