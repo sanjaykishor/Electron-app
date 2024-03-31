@@ -7,5 +7,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     progressUpdate: (callback) => ipcRenderer.on('progress-update', (_event, ...args) => callback(...args)),
     startFlashing: () => ipcRenderer.send('start-flashing'),
     flashingError: (callback) => ipcRenderer.on('flashing-error', (_event, ...args) => callback(...args)),
-    flashingSuccess: (callback) => ipcRenderer.on('flashing-success', (_event, ...args) => callback(...args))
+    flashingSuccess: (callback) => ipcRenderer.on('flashing-success', (_event, ...args) => callback(...args)),
+    login: (username, password) => ipcRenderer.send('login', username, password),
+    loginError: (callback) => ipcRenderer.on('login-error', (_event, ...args) => callback(...args)),
+    loginSuccess: (callback) => ipcRenderer.on('login-success', (_event, ...args) => callback(...args))
 })

@@ -21,6 +21,7 @@ function createMainWindow() {
 
   ipcMain.on("file-upload", (event, filePath) => {
     if (!filePath.endsWith(".tar.gz")) {
+      console.log("Invalid file type");
       mainWindow.webContents.send(
         "upload-error",
         "Please upload a .tar.gz file."
@@ -74,14 +75,26 @@ function createMainWindow() {
     executeScript(scriptPath);
   });
 
+  ipcMain.on("login", (event, username, password) => {
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+    if (username === "admin" && password === "admin") {
+      mainWindow.webContents.send("login-success", "Login successful");
+    } else {
+      mainWindow.webContents.send("login-error", "Invalid username or password");
+    }
+    
+  });
+
   function executeScript(scriptPath) {
     console.log("Executing script:", scriptPath);
 
     const child = spawn("uuu", ["-v", scriptPath]);
 
     // test
-    // setTimeout(()=>mainWindow.webContents.send("progress-update", 1), 5000);
-    // setTimeout(()=> mainWindow.webContents.send("flashing-success", "completed"), 10000); 
+    setTimeout(()=>mainWindow.webContents.send("progress-update", 1), 5000);
+    setTimeout(()=> mainWindow.webContents.send("flashing-success", "completed"), 10000); 
 
     child.stdout.on("data", (data) => {
       console.log(`stdout: ${data}`);
