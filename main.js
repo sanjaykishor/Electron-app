@@ -4,6 +4,7 @@ const tar = require("tar");
 const path = require("path");
 const mkdirp = require("mkdirp");
 const { spawn } = require("child_process");
+const login = require("./lib/login");
 
 function createMainWindow() {
   const mainWindow = new BrowserWindow({
@@ -76,15 +77,41 @@ function createMainWindow() {
   });
 
   ipcMain.on("login", (event, username, password) => {
+    if (login.isRequestSent) {
+      console.log("Request already sent");
+      return;
+    }
+
     console.log("Username:", username);
     console.log("Password:", password);
 
+    login.setUserName(username);
+    login.setPassword(password);
+
+    // login.getAccessToken((err, data) => {
+    //   console.log("getAccessToken data:", data);
+    //   login.isRequestSent = false;
+    //   if (err) {
+    //     console.log("getAccessToken error:", err);
+    //     mainWindow.webContents.send("login-error", login.getErrorMessage(err.code));
+    //   } else if(!data.access_token || !data.success) {
+    //     mainWindow.webContents.send("login-error", "Invalid username or password");
+    //   } else {
+    //     mainWindow.webContents.send("login-success", "Login successful");
+    //   }
+    // });
+
+    // Test
     if (username === "admin" && password === "admin") {
+      login.isRequestSent = false;
       mainWindow.webContents.send("login-success", "Login successful");
     } else {
-      mainWindow.webContents.send("login-error", "Invalid username or password");
+      login.isRequestSent = false;
+      mainWindow.webContents.send(
+        "login-error",
+        "Invalid username or password"
+      );
     }
-    
   });
 
   function executeScript(scriptPath) {
@@ -93,15 +120,22 @@ function createMainWindow() {
     const child = spawn("uuu", ["-v", scriptPath]);
 
     // test
-    setTimeout(()=>mainWindow.webContents.send("progress-update", 1), 5000);
-    setTimeout(()=> mainWindow.webContents.send("flashing-success", "completed"), 10000); 
+    setTimeout(() => mainWindow.webContents.send("progress-update", 1), 5000);
+    setTimeout(
+      () => mainWindow.webContents.send("flashing-success", "completed"),
+      10000
+    );
 
     child.stdout.on("data", (data) => {
       console.log(`stdout: ${data}`);
 
       if (data.toString().includes("done")) {
         mainWindow.webContents.send("progress-update", 1);
-        setTimeout(()=> mainWindow.webContents.send("flashing-success", data.toString()), 500); 
+        setTimeout(
+          () =>
+            mainWindow.webContents.send("flashing-success", data.toString()),
+          500
+        );
       }
     });
 
