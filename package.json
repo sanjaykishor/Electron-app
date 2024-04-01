@@ -3,13 +3,22 @@
   "version": "1.0.0",
   "description": "Flashes the v4.2 hub through uuu tool",
   "main": "main.js",
+  "productName": "rently-v4.2-hub-flasher",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "electron-packager .  rently-v4.2-hub-flasher --platform=linux --arch=x64 --icon=./icon.png --prune=true --out=/home/rently/release-builds",
+    "build": "electron-installer-debian --src /home/rently/release-builds/rently-v4.2-hub-flasher-linux-x64/ --arch amd64 --config debian.json",
+    "clean": "rm -rf /home/rently/release-builds"
   },
   "author": "Rently.inc",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^29.1.6"
+    "electron": "^29.1.6",
+    "electron-installer-debian": "^3.2.0",
+    "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "tar": "^6.2.1"
   }
 }
