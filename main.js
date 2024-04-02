@@ -5,6 +5,7 @@ const path = require("path");
 const mkdirp = require("mkdirp");
 const { spawn } = require("child_process");
 const login = require("./lib/login");
+const uploadPath = '/home/rently';
 
 function createMainWindow() {
   const mainWindow = new BrowserWindow({
@@ -30,28 +31,24 @@ function createMainWindow() {
       return;
     }
 
-    if (fs.existsSync(path.join(__dirname, "uploads"))) {
-      fs.rmdirSync(path.join(__dirname, "uploads"), { recursive: true });
+    if (fs.existsSync(`${uploadPath}/uploads`)) {
+      fs.rmdirSync((`${uploadPath}/uploads`), { recursive: true });
     }
 
-    if (!fs.existsSync(path.join(__dirname, "uploads"))) {
-      mkdirp.sync(path.join(__dirname, "uploads"));
+    if (!fs.existsSync(`${uploadPath}/uploads`)) {
+      mkdirp.sync(`${uploadPath}/uploads`);
     }
 
     // Extract the tar.gz file
     tar
       .extract({
         file: filePath,
-        cwd: path.join(__dirname, "uploads"),
+        cwd: `${uploadPath}/uploads`,
       })
       .then(() => {
         // Check if uuu.auto script exists
         console.log("Extracted tar.gz file");
-        const scriptPath = path.join(
-          __dirname,
-          "uploads/nand-flash",
-          "uuu.auto"
-        );
+        const scriptPath = `${uploadPath}/uploads/nand-flash/uuu.auto`;
         if (!fs.existsSync(scriptPath)) {
           mainWindow.webContents.send(
             "upload-error",
@@ -68,7 +65,7 @@ function createMainWindow() {
   });
 
   ipcMain.on("start-flashing", () => {
-    const scriptPath = path.join(__dirname, "uploads/nand-flash");
+    const scriptPath = `${uploadPath}/uploads/nand-flash/`;
     mainWindow.webContents.send("progress-update", 0);
 
     console.log("Starting flashing");
